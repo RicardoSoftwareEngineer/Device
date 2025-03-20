@@ -1,23 +1,27 @@
 package com.example.device.service;
 
+import com.example.device.dto.DeviceDTO;
+
+import java.util.List;
+
 public class DeviceService {
 
-    public Object create(Object deviceDTO){
+    public DeviceDTO create(DeviceDTO deviceDTO){
         return null;
     }
 
-    public Object retrieve(Object deviceId){
+    public DeviceDTO retrieve(DeviceDTO deviceId){
         return null;
     }
 
-    public Object list(){
+    public List<DeviceDTO> list(){
         return null;
     }
 
-    public Object update(Object deviceDTO){
+    public DeviceDTO update(DeviceDTO deviceDTO){
         return null;
     }
 
-    public void delete(Object deviceId){
+    public void delete(DeviceDTO deviceId){
     }
 }

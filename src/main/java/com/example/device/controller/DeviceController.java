@@ -1,32 +1,35 @@
 package com.example.device.controller;
 
+import com.example.device.dto.DeviceDTO;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class DeviceController {
 
     @PostMapping(value = "/device/v1")
-    public Object create(@RequestBody Object deviceDTO){
+    public DeviceDTO create(@RequestBody DeviceDTO deviceDTO){
         return null;
     }
 
     @GetMapping(value = "/device/v1/{id}")
-    public Object retrieve(@RequestBody Object deviceDTO){
+    public DeviceDTO retrieve(@RequestBody DeviceDTO deviceDTO){
         return null;
     }
 
     @GetMapping(value = "/device/v1/list")
-    public Object list(){
+    public List<DeviceDTO> list(){
         return null;
     }
 
     @PutMapping(value = "/device/v1/{id}")
-    public Object update(){
+    public DeviceDTO update(@RequestBody DeviceDTO deviceDTO){
         return null;
     }
 
     @DeleteMapping(value = "/device/v1/{id}")
-    public Object delete(){
+    public DeviceDTO delete(){
         return null;
     }
 }
