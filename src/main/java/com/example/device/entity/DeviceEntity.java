@@ -1,10 +1,19 @@
-package com.example.device.dto;
+package com.example.device.entity;
 
-import com.example.device.entity.StateEnum;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 
-public class DeviceDTO {
+@Entity
+@Table(name = "Device")
+public class DeviceEntity {
+    @Id
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
     private String name;
     private String brand;
