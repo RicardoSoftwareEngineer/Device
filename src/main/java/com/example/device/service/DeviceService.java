@@ -3,9 +3,11 @@ package com.example.device.service;
 import com.example.device.dto.DeviceDTO;
 import com.example.device.repository.DeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class DeviceService {
     @Autowired
     private DeviceRepository deviceRepository;
