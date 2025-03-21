@@ -1,10 +1,7 @@
 package com.example.device.entity;
 
 import com.example.device.dto.DeviceDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
@@ -19,6 +16,7 @@ public class DeviceEntity {
     private String name;
     private String brand;
     private StateEnum state;
+    @Column(updatable = false)
     private LocalDateTime creationTime;
 
     public DeviceEntity() {
