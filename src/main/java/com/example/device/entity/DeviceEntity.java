@@ -1,5 +1,6 @@
 package com.example.device.entity;
 
+import com.example.device.dto.DeviceDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -19,6 +20,17 @@ public class DeviceEntity {
     private String brand;
     private StateEnum state;
     private LocalDateTime creationTime;
+
+    public DeviceEntity() {
+    }
+
+    public DeviceEntity(DeviceDTO deviceDTO) {
+        this.id = deviceDTO.getId();
+        this.name = deviceDTO.getName();
+        this.brand = deviceDTO.getBrand();
+        this.state = deviceDTO.getState() == null ? StateEnum.AVAILABLE : deviceDTO.getState();
+        this.creationTime = LocalDateTime.now();
+    }
 
     public String getId() {
         return id;

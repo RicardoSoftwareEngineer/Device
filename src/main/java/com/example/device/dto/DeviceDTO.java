@@ -1,5 +1,6 @@
 package com.example.device.dto;
 
+import com.example.device.entity.DeviceEntity;
 import com.example.device.entity.StateEnum;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,17 @@ public class DeviceDTO {
     private String brand;
     private StateEnum state;
     private LocalDateTime creationTime;
+
+    public DeviceDTO() {
+    }
+
+    public DeviceDTO(DeviceEntity deviceEntity) {
+        this.id = deviceEntity.getId();
+        this.name = deviceEntity.getName();
+        this.brand = deviceEntity.getBrand();
+        this.state = deviceEntity.getState();
+        this.creationTime = deviceEntity.getCreationTime();
+    }
 
     public String getId() {
         return id;
