@@ -58,7 +58,7 @@ The API manages devices with the following properties:
 
 3. **Use the provided docker-compose.yml to start the app and database:**
    ```bash
-   docker-compose up
+   docker-compose up --build
 
 #### This will:
 - Build the application image (device-api).
