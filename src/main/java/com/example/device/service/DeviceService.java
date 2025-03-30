@@ -3,6 +3,9 @@ package com.example.device.service;
 import com.example.device.dto.DeviceDTO;
 import com.example.device.entity.DeviceEntity;
 import com.example.device.entity.StateEnum;
+import com.example.device.exception.DeviceNotFoundException;
+import com.example.device.exception.DeviceUpdateForbiddenException;
+import com.example.device.exception.ErrorMessage;
 import com.example.device.repository.DeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +27,7 @@ public class DeviceService {
 
     public DeviceDTO retrieveById(String deviceId){
         DeviceEntity deviceEntity = deviceRepository.findById(deviceId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found"));
+                .orElseThrow(() -> new DeviceNotFoundException(deviceId));
         return new DeviceDTO(deviceEntity);
     }
 
@@ -51,13 +54,13 @@ public class DeviceService {
 
     public DeviceDTO update(String deviceId, DeviceDTO deviceDTO){
         DeviceEntity deviceEntity = deviceRepository.findById(deviceId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found"));
+                .orElseThrow(() -> new DeviceNotFoundException(deviceId));
         if(deviceEntity.getState().equals(StateEnum.IN_USE)){
             if(deviceDTO.getName() != null && !deviceEntity.getName().equals(deviceDTO.getName())){
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Name and brand properties cannot be updated if the device is in use");
+                throw new DeviceUpdateForbiddenException(ErrorMessage.DEVICE_IN_USE_UPDATE_NAME);
             }
             if(deviceDTO.getBrand() != null && !deviceEntity.getBrand().equals(deviceDTO.getBrand())){
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Name and brand properties cannot be updated if the device is in use");
+                throw new DeviceUpdateForbiddenException(ErrorMessage.DEVICE_IN_USE_UPDATE_NAME);
             }
         }
         if(deviceDTO.getName() != null){
@@ -74,9 +77,9 @@ public class DeviceService {
 
     public void delete(String deviceId){
         DeviceEntity deviceEntity = deviceRepository.findById(deviceId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found"));
+                .orElseThrow(() -> new DeviceNotFoundException(deviceId));
         if(deviceEntity.getState().equals(StateEnum.IN_USE)){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "In use devices cannot be deleted");
+            throw new DeviceUpdateForbiddenException(ErrorMessage.DEVICE_IN_USE_DELETE);
         }
         deviceRepository.deleteById(deviceId);
     }
