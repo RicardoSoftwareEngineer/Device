@@ -22,7 +22,7 @@ public class DeviceController {
     @Autowired
     private DeviceService deviceService;
 
-    @PostMapping(value = "/device/v1")
+    @PostMapping(value = "/devices/v1")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new device", description = "Adds a new device to the system based on the provided data.")
     @ApiResponses(value = {
@@ -33,7 +33,7 @@ public class DeviceController {
         return deviceService.create(deviceDTO);
     }
 
-    @GetMapping(value = "/device/v1/{id}")
+    @GetMapping(value = "/devices/v1/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieve a device by ID", description = "Returns the details of a specific device based on the provided ID.")
     @ApiResponses(value = {
@@ -45,7 +45,7 @@ public class DeviceController {
         return deviceService.retrieveById(id);
     }
 
-    @GetMapping(value = "/device/v1/retrieveAll")
+    @GetMapping(value = "/devices/v1")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "List all devices", description = "Returns a list of all registered devices.")
     @ApiResponses(value = {
@@ -56,7 +56,7 @@ public class DeviceController {
         return deviceService.retrieveAll();
     }
 
-    @GetMapping(value = "/device/v1/retrieveByBrand/{brand}")
+    @GetMapping(value = "/devices/v1/brand/{brand}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "List devices by brand", description = "Returns a list of devices filtered by the specified brand.")
     @ApiResponses(value = {
@@ -67,7 +67,7 @@ public class DeviceController {
         return deviceService.retrieveByBrand(brand);
     }
 
-    @GetMapping(value = "/device/v1/retrieveByState/{state}")
+    @GetMapping(value = "/devices/v1/state/{state}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "List devices by state", description = "Returns a list of devices filtered by the specified state.")
     @ApiResponses(value = {
@@ -78,7 +78,7 @@ public class DeviceController {
         return deviceService.retrieveByState(state);
     }
 
-    @PutMapping(value = "/device/v1/{id}")
+    @PutMapping(value = "/devices/v1/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update a device", description = "Updates the data of an existing device based on the provided ID and new data.")
     @ApiResponses(value = {
@@ -93,7 +93,7 @@ public class DeviceController {
         return deviceService.update(id, deviceDTO);
     }
 
-    @DeleteMapping(value = "/device/v1/{id}")
+    @DeleteMapping(value = "/devices/v1/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete a device", description = "Removes a device from the system based on the provided ID.")
     @ApiResponses(value = {
