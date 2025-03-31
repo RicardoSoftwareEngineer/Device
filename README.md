@@ -1,5 +1,5 @@
 # Devices API
-This project is a RESTful API developed to persist and manage device resources, built with Spring Boot 3.4.3, Java 21, and Maven. The application is containerized using Docker, persists data in a PostgreSQL database, and includes comprehensive test coverage and API documentation via Swagger (Springdoc OpenAPI).
+This project is a RESTFull API developed to persist and manage device resources, built with Spring Boot 3.4.3, Java 21, and Maven. The application is containerized using Docker, persists data in a PostgreSQL database, and includes comprehensive test coverage and API documentation via Swagger (Springdoc OpenAPI).
 
 ## Project Overview
 
@@ -73,6 +73,11 @@ The API manages devices with the following properties:
 5. **Here are the postman requests:**
    https://www.postman.com/digitusforum/workspace/postman/collection/13921718-c58c1432-61b7-4c8b-9508-82abe2aaff86?action=share&creator=13921718
 
+
+## Debug
+1. **In order to debug the application, it is necessary to have a PostgreSQL database running locally using the following Docker command:**
+   ```bash
+   docker run -d --name postgres-container -p 5432:5432 -e POSTGRES_PASSWORD=db_password postgres:latest
 
 ---
 
