@@ -22,6 +22,14 @@ public class DeviceEntity {
     public DeviceEntity() {
     }
 
+    public DeviceEntity(String id, String name, String brand, StateEnum state, LocalDateTime creationTime) {
+        this.id = id;
+        this.name = name;
+        this.brand = brand;
+        this.state = state;
+        this.creationTime = creationTime;
+    }
+
     public DeviceEntity(DeviceDTO deviceDTO) {
         this.id = deviceDTO.getId();
         this.name = deviceDTO.getName();

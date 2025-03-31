@@ -3,6 +3,9 @@ package com.example.device;
 import com.example.device.dto.DeviceDTO;
 import com.example.device.entity.DeviceEntity;
 import com.example.device.entity.StateEnum;
+import com.example.device.exception.DeviceNotFoundException;
+import com.example.device.exception.DeviceUpdateForbiddenException;
+import com.example.device.exception.ErrorMessage;
 import com.example.device.repository.DeviceRepository;
 import com.example.device.service.DeviceService;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,27 +32,10 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DeviceServiceTest {
-
-    @Mock
-    private DeviceRepository deviceRepository;
-
-    @InjectMocks
-    private DeviceService deviceService;
-
-    private DeviceEntity sampleEntity;
-    private DeviceDTO sampleDTO;
-
-    @BeforeEach
-    void setUp() {
-        sampleEntity = new DeviceEntity();
-        sampleEntity.setId("1");
-        sampleEntity.setName("Device1");
-        sampleEntity.setBrand("Brand1");
-        sampleEntity.setState(StateEnum.AVAILABLE);
-        sampleEntity.setCreationTime(LocalDateTime.now());
-
-        sampleDTO = new DeviceDTO(sampleEntity);
-    }
+    private final DeviceRepository deviceRepository = mock(DeviceRepository.class);
+    private final DeviceService deviceService = new DeviceService(deviceRepository);
+    private final DeviceEntity sampleEntity = new DeviceEntity("1", "Device1", "Brand1", StateEnum.AVAILABLE, null);
+    private final DeviceDTO sampleDTO = new DeviceDTO(sampleEntity);
 
     @Test
     void create_ShouldReturnDeviceDTO_WhenSuccessful() {
@@ -73,34 +63,39 @@ class DeviceServiceTest {
     void retrieveById_ShouldThrowNotFound_WhenDeviceDoesNotExist() {
         when(deviceRepository.findById("999")).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        DeviceNotFoundException exception = assertThrows(DeviceNotFoundException.class,
                 () -> deviceService.retrieveById("999"));
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-        assertEquals("Device not found", exception.getReason());
+        assertEquals(ErrorMessage.DEVICE_NOT_FOUND.getMessage().formatted("999"), exception.getMessage());
         verify(deviceRepository, times(1)).findById("999");
     }
 
     @Test
-    void retrieveByBrand_ShouldReturnListOfDeviceDTOs_WhenBrandExists() {
-        when(deviceRepository.findByBrand("Brand1")).thenReturn(List.of(sampleEntity));
+    void retrieveByBrand_ShouldReturnPageOfDeviceDTOs_WhenBrandExists() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<DeviceEntity> page = new PageImpl<>(List.of(sampleEntity), pageable, 1);
+        when(deviceRepository.findByBrand("Brand1", pageable)).thenReturn(page);
 
-        List<DeviceDTO> result = deviceService.retrieveByBrand("Brand1");
+        Page<DeviceDTO> result = deviceService.retrieveByBrand("Brand1", pageable);
 
         assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        assertEquals(sampleEntity.getBrand(), result.get(0).getBrand());
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getContent().size());
+        assertEquals(sampleEntity.getBrand(), result.getContent().get(0).getBrand());
     }
 
     @Test
-    void retrieveByState_ShouldReturnListOfDeviceDTOs_WhenStateExists() {
-        when(deviceRepository.findByState(StateEnum.AVAILABLE)).thenReturn(List.of(sampleEntity));
+    void retrieveByState_ShouldReturnPageOfDeviceDTOs_WhenStateExists() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<DeviceEntity> page = new PageImpl<>(List.of(sampleEntity), pageable, 1);
+        when(deviceRepository.findByState(StateEnum.AVAILABLE, pageable)).thenReturn(page);
 
-        List<DeviceDTO> result = deviceService.retrieveByState(StateEnum.AVAILABLE);
+        Page<DeviceDTO> result = deviceService.retrieveByState(StateEnum.AVAILABLE, pageable);
 
         assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        assertEquals(sampleEntity.getState(), result.get(0).getState());
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getContent().size());
+        assertEquals(sampleEntity.getState(), result.getContent().get(0).getState());
     }
 
     @Test
@@ -127,11 +122,10 @@ class DeviceServiceTest {
 
         when(deviceRepository.findById("1")).thenReturn(Optional.of(sampleEntity));
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        DeviceUpdateForbiddenException exception = assertThrows(DeviceUpdateForbiddenException.class,
                 () -> deviceService.update("1", updateDTO));
 
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        assertEquals("Name and brand properties cannot be updated if the device is in use", exception.getReason());
+        assertEquals(ErrorMessage.DEVICE_IN_USE_UPDATE_NAME.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -139,11 +133,10 @@ class DeviceServiceTest {
         DeviceDTO updateDTO = new DeviceDTO();
         when(deviceRepository.findById("999")).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        DeviceNotFoundException exception = assertThrows(DeviceNotFoundException.class,
                 () -> deviceService.update("999", updateDTO));
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-        assertEquals("Device not found", exception.getReason());
+        assertEquals(ErrorMessage.DEVICE_NOT_FOUND.getMessage().formatted("999"), exception.getMessage());
     }
 
     @Test
@@ -151,21 +144,19 @@ class DeviceServiceTest {
         sampleEntity.setState(StateEnum.IN_USE);
         when(deviceRepository.findById("1")).thenReturn(Optional.of(sampleEntity));
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        DeviceUpdateForbiddenException exception = assertThrows(DeviceUpdateForbiddenException.class,
                 () -> deviceService.delete("1"));
 
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        assertEquals("In use devices cannot be deleted", exception.getReason());
+        assertEquals(ErrorMessage.DEVICE_IN_USE_DELETE.getMessage(), exception.getMessage());
     }
 
     @Test
     void delete_ShouldThrowNotFound_WhenDeviceDoesNotExist() {
         when(deviceRepository.findById("999")).thenReturn(Optional.empty());
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        DeviceNotFoundException exception = assertThrows(DeviceNotFoundException.class,
                 () -> deviceService.delete("999"));
 
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-        assertEquals("Device not found", exception.getReason());
+        assertEquals(ErrorMessage.DEVICE_NOT_FOUND.getMessage().formatted("999"), exception.getMessage());
     }
 }
