@@ -11,10 +11,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @Tag(name = "Device API", description = "REST API capable of persisting and managing device resources")
@@ -52,8 +52,8 @@ public class DeviceController {
             @ApiResponse(responseCode = "200", description = "List of devices retrieved",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = DeviceDTO.class)))
     })
-    public List<DeviceDTO> retrieveAll(){
-        return deviceService.retrieveAll();
+    public PageImpl<DeviceDTO> retrieveAll(Pageable pageable){
+        return deviceService.retrieveAll(pageable);
     }
 
     @GetMapping(value = "/devices/v1/brand/{brand}")
@@ -63,8 +63,8 @@ public class DeviceController {
             @ApiResponse(responseCode = "200", description = "List of devices retrieved",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = DeviceDTO.class)))
     })
-    public List<DeviceDTO> retrieveByBrand(@PathVariable @Parameter(description = "Brand of the devices") String brand){
-        return deviceService.retrieveByBrand(brand);
+    public PageImpl<DeviceDTO> retrieveByBrand(@PathVariable @Parameter(description = "Brand of the devices") String brand, Pageable pageable){
+        return deviceService.retrieveByBrand(brand, pageable);
     }
 
     @GetMapping(value = "/devices/v1/state/{state}")
@@ -74,8 +74,8 @@ public class DeviceController {
             @ApiResponse(responseCode = "200", description = "List of devices retrieved",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = DeviceDTO.class)))
     })
-    public List<DeviceDTO> retrieveByState(@PathVariable @Parameter(description = "State of the devices (e.g., AVAILABLE, IN_USE,  INACTIVE)") StateEnum state){
-        return deviceService.retrieveByState(state);
+    public PageImpl<DeviceDTO> retrieveByState(@PathVariable @Parameter(description = "State of the devices (e.g., AVAILABLE, IN_USE,  INACTIVE)") StateEnum state, Pageable pageable){
+        return deviceService.retrieveByState(state, pageable);
     }
 
     @PutMapping(value = "/devices/v1/{id}")
